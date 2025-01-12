@@ -1,5 +1,5 @@
 package chrkey.bean;
-public class account_info {
+public class AccountInfo {
     String account_number;
     String name;
     String bank;

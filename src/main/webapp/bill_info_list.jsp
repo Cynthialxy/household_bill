@@ -4,9 +4,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="chrkey.bean.Bill" %>
 
+
+
 <html>
 <head>
-  <title>list.jsp</title>
+  <title>bill_info_list.jsp</title>
   <style>
     .container {
       display: flex;
@@ -40,11 +42,16 @@
   </script>
 
 </head>
-<body>
+<body onload="getName()">
+<form action="statistics.jsp"method="post">
+  <div class="container" align="center">
+    <button>收支统计</button>
+  </div>
+</form>
 <form action="add_bill.jsp" method="post">
   <div class="hyn">
   <div class="con">欢迎你</div>
-  <div class="conn" name="name"></div>
+    <input  style='border: none;' class="conn" name="name" id="name"/>
   <a class="conn" href="logintocheck.jsp">退出</a>
   </div>
   <div class="container" align='center'>
@@ -53,7 +60,7 @@
         <select name="year">
           <%-- 设置年份选项 --%>
           <% for (int year = 2000; year <= 2024; year++) { %>
-          <option value="<%= year %>"><%= year %></option>
+          <option value="<%= year %>" id="year" name="year"><%= year %></option>
           <% } %>
         </select>
       </label>
@@ -61,7 +68,7 @@
         <select name="month">
           <%-- 设置月份选项 --%>
           <% for (int month = 1; month <= 12; month++) { %>
-          <option value="<%= month %>"><%= month %></option>
+          <option value="<%= month %>" id="month" name="month"><%= month %></option>
           <% } %>
         </select>
       </label>
@@ -78,24 +85,27 @@
     List<Bill> list = SqlConn.selectAllFromBill();
 
     out.print("<table border='1' cellspacing='1' align='center'><tr>");
-    out.print("");
     out.print("<tr style='border: none;'>"
             + "<th width='120'>时间</th>"
-            + "<th width='80'>收/支</th>"
-            + "<th width='60'>类型</th>"
+            + "<th width='80'>类型</th>"
+            + "<th width='60'>账户</th>"
             + "<th width='120'>金额</th>"
-            + "<th width='120'>账户</th>"
-            + "<th width='100'>描述</th>");
+            + "<th width='120'>人员</th>"
+            + "<th width='120'>描述</th>"
+            + "<th width='100'>收/支</th>");
 
     for (Bill bill : list) {
-      out.print("<tr style='border: none;'>");
-      out.print("<td align='center'>" + bill.getTime() + "</td>");
-      out.print("<td align='center'>" + bill.getIn_or_out() + "</td>");
-      out.print("<td align='center'>" + bill.getType() + "</td>");
-      out.print("<td align='center'>" + bill.getSum() + "</td>");
-      out.print("<td align='center'>" + bill.getAccount() + "</td>");
-      out.print("<td align='center'>" + bill.getRemarks() + "</td>");
-      out.print("</tr>");
+      if (bill.getPerson().equals(request.getParameter("name"))) {
+        out.print("<tr style='border: none;'>");
+        out.print("<td align='center'>" + bill.getTime() + "</td>");
+        out.print("<td align='center'>" + bill.getType() + "</td>");
+        out.print("<td align='center'>" + bill.getAccount() + "</td>");
+        out.print("<td align='center'>" + bill.getSum() + "</td>");
+        out.print("<td align='center'>" + bill.getPerson() + "</td>");
+        out.print("<td align='center'>" + bill.getRemarks() + "</td>");
+        out.print("<td align='center'>" + bill.getIn_or_out() + "</td>");
+        out.print("</tr>");
+      }
     }
     out.print("</table>");
 

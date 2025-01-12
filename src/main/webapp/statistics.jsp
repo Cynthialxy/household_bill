@@ -88,7 +88,7 @@
     option = {
         color: ['#3398DB'],
         tooltip: {
-           trigger: 'axis',
+            trigger: 'axis',
             axisPointer: {
                 type: 'shadow'
             }
@@ -115,7 +115,6 @@
         ],
         series: [
             {
-                name: '直接访问',
                 type: 'bar',
                 barWidth: '50%',
                 // data:[335, 310, 234
@@ -148,7 +147,6 @@
         },
         series: [
             {
-                name: '访问来源',
                 type: 'pie',
                 radius: '50%',
                 center: ['50%', '60%'],

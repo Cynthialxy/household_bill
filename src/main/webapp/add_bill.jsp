@@ -1,7 +1,14 @@
+<%@ page import="chrkey.bean.AccountInfo" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="java.sql.Connection" %>
+<%@ page import="chrkey.bean.SqlConn" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.mysql.cj.jdbc.result.ResultSetImpl" %>
+<%@ page import="chrkey.bean.Bill" %>
+<%@ page import="chrkey.bean.UserInfo" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
-<%@ page import="chrkey.bean.SqlConn" %>
-<%@ page import="java.sql.Connection" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,62 +58,89 @@
   </style>
 
   <script>
+
 function validateForm() {
-      var studentId = document.forms["form"]["id"].value;
-      var name = document.forms["form"]["name"].value;
-      var phone = document.forms["form"]["phone"].value;
+      var time = document.forms["form"]["time"].value;
+      var in_or_out = document.forms["form"]["in_or_out"].value;
+      var type = document.forms["form"]["type"].value;
+      var account = document.forms["form"]["account"].value;
+      var sum = document.forms["form"]["sum"].value;
+      var person = document.forms["form"]["person"].value;
+      var remarks = document.forms["form"]["remarks"].value;
 
-      if (studentId.trim() === "" || name.trim() === ""  || gender.trim() === "") {
-        alert("学号、姓名、性别不能为空");
+      if (time.trim() === "" || in_or_out.trim() === ""  || type.trim() === ""  || account.trim() === ""    || sum.trim() === ""  || person.trim() === ""  || remarks.trim() === "") {
+        alert("时间、收/支、类型、账户、金额、人员、描述不能为空");
         return false;
       }
-      if (!/^\d{11}$/.test(phone)) {
-        alert("电话格式必须是11位数字");
-        return false;
-      }
-
       return true;
     }
 
-    function submitStudent() {
+    function submitBill() {
       if (validateForm()) {
         document.forms["form"].submit();
       }
     }
-
-    function populateForm() {
-      var urlParams = new URLSearchParams(window.location.search);
-      var id = urlParams.get("id");
-      var name = urlParams.get("name");
-      var gender = urlParams.get("gender");
-      var phone = urlParams.get("phone");
-
-      if (id && name && gender && phone) {
-        document.getElementById("id").value = id;
-        document.getElementById("name").value = name;
-        document.getElementById("gender").value = gender;
-        document.getElementById("phone").value = phone;
-      }
-    }
     function handleRadioClick(radio) {
-    let previousRadio = null;
-
   let previousRadio = null;
 
-  function handleRadioClick(radio) {
-    if (previousRadio !== null && previousRadio !== radio) {
-      previousRadio.checked = false;
-    }
-    previousRadio = radio;
+  if (previousRadio !== null && previousRadio !== radio) {
+    previousRadio.checked = false;
+  }
+  previousRadio = radio;
 
-    if (!radio.checked) {
-      radio.checked = true;
+  if (!radio.checked) {
+    radio.checked = true;
+  }
+
+  // 获取类型下拉框元素
+  var typeSelect = document.getElementById("type");
+  // 清空类型下拉框的选项
+  typeSelect.innerHTML = "";
+
+  if (radio.value === "收入") {
+    // 添加收入类型的选项
+    var incomeOptions = [" ","工资", "投资", "其他收入"];
+    for (var i = 0; i < incomeOptions.length; i++) {
+      var option = document.createElement("option");
+      option.value = incomeOptions[i];
+      option.text = incomeOptions[i];
+      typeSelect.appendChild(option);
+    }
+  } else if (radio.value === "支出") {
+    // 添加支出类型的选项
+    var expenseOptions = [" ","日常消费", "文化体育", "其他消费"];
+    for (var i = 0; i < expenseOptions.length; i++) {
+      var option = document.createElement("option");
+      option.value = expenseOptions[i];
+      option.text = expenseOptions[i];
+      typeSelect.appendChild(option);
     }
   }
+}
+   function populateForm() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var time = urlParams.get("time");
+      var in_or_out = urlParams.get("in_or_out");
+      var type = urlParams.get("type");
+      var account = urlParams.get("account");
+      var sum = urlParams.get("sum");
+      var person = urlParams.get("person");
+      var remarks = urlParams.get("remarks");
+
+      if (time && in_or_out && type && account && sum && person && remarks) {
+        document.getElementById("time").value = time;
+        document.getElementById("in_or_out").value = in_or_out;
+        document.getElementById("type").value = type;
+        document.getElementById("account").value = account;
+        document.getElementById("sum").value = sum;
+        document.getElementById("person").value = person;
+        document.getElementById("remarks").value = remarks;
+      }
+    }
   </script>
 </head>
 <body onload="populateForm()">
-<form method="post" name="form" action="addto.jsp" onsubmit="return false">
+<form method="post" name="form" action="add_bill_to.jsp" onsubmit="return false">
   <table width="230" border="1">
     <tbody>
     <tr>
@@ -114,10 +148,10 @@ function validateForm() {
       <td style="border: none;"><div class="inline">
 
         <label class="select-label">
-          <select name="year" class="select-input">
+          <select name="year" class="select-input" id="time" name="time">
             <%-- 设置年份选项 --%>
             <% for (int year = 2000; year <= 2024; year++) { %>
-            <option value="<%= year %>"><%= year %></option>
+            <option value="<%= year %>" id="year" name="year"><%= year %></option>
             <% } %>
           </select>
         </label>
@@ -125,7 +159,7 @@ function validateForm() {
           <select name="month" class="select-input">
             <%-- 设置月份选项 --%>
             <% for (int month = 1; month <= 12; month++) { %>
-            <option value="<%= month %>"><%= month %></option>
+            <option value="<%= month %>" id="month" name="month"><%= month %></option>
             <% } %>
           </select>
         </label>
@@ -136,15 +170,15 @@ function validateForm() {
     <tr>
       <td style="border: none;"><div class="inline"><span>收</span><span>/</span><span>支</span></div></td>
       <td style="border: none;">
-    <label>
-      <input type="radio" name="in_or_out" value="1">
-      收入
-    </label>
+        <label>
+          <input type="radio" name="in_or_out" value="收入" onclick="handleRadioClick(this)">
+          收入
+        </label>
 
-    <label>
-      <input type="radio" name="in_or_out" value="0">
-      支出
-    </label>
+        <label>
+          <input type="radio" name="in_or_out" value="支出" onclick="handleRadioClick(this)">
+          支出
+        </label>
       </td>
     </tr>
 
@@ -153,10 +187,6 @@ function validateForm() {
       <td style="border: none;">
         <label>
           <select name="type" id="type">
-            <option value=""></option>
-            <option value="工资">工资</option>
-            <option value="投资">投资</option>
-            <option value="其他">其他</option>
           </select>
         </label>
       </td>
@@ -168,16 +198,63 @@ function validateForm() {
     </tr>
 
     <tr>
-      <td style="border: none;"><div class="inline"><span>账</span><span>户</span></div></td>
-      <td style="border: none;">
-        <label>
-          <select name="account" id="account">
-            <option value="account1"></option>
-            <option value="account2"></option>
-            <option value="account3"></option>
-          </select>
-        </label>
-      </td>
+      <%
+        Connection connection = SqlConn.getConnection();
+        if (connection != null) {
+          List<UserInfo> list = SqlConn.selectAllFromUserInfo();
+
+          out.print("<td style=\"border: none;\"><div class=\"inline\"><span>人</span><span>员</span></div></td>");
+          out.print("<td style=\"border: none;\">"
+                  + "<label>"
+                  + "<select name=\"person\" id=\"person\">"
+                  + "<option>"+"</option>");
+
+          for (UserInfo userInfo : list) {
+            out.print("<option value=\""+userInfo.getName() +"\">" + userInfo.getName() + "</option>");
+          }
+          out.print("</select>");
+          out.print("</label>");
+          out.print("</td>");
+          out.print("</td>");
+          try {
+            connection.close();
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+        } else {
+          out.println("数据库连接失败");
+        }
+      %>
+    </tr>
+
+    <tr>
+      <%
+        Connection connection1 = SqlConn.getConnection();
+        if (connection1 != null) {
+          List<AccountInfo> list = SqlConn.selectAllFromAccountInfo();
+
+          out.print("<td style=\"border: none;\"><div class=\"inline\"><span>账</span><span>户</span></div></td>");
+          out.print("<td style=\"border: none;\">"
+                  + "<label>"
+                  + "<select name=\"account\" id=\"account\">"
+                  + "<option value=\"account\" >"+"</option>");
+
+          for (AccountInfo accountInfo : list) {
+            out.print("<option value=\"" + accountInfo.getAccount_number() + "\">" + accountInfo.getAccount_number() + "</option>");
+          }
+              out.print("</select>");
+            out.print("</label>");
+            out.print("</td>");
+            out.print("</td>");
+            try {
+              connection.close();
+            } catch (SQLException e) {
+              throw new RuntimeException(e);
+            }
+        } else {
+          out.println("数据库连接失败");
+        }
+      %>
     </tr>
 
     <tr>
@@ -188,7 +265,7 @@ function validateForm() {
       </td>
       <td style="border: none;">
         <div class="inline">
-          <textarea name="remark" rows="5" cols="20"></textarea>
+          <textarea name="remarks" rows="5" cols="20"></textarea>
         </div>
       </td>
     </tr>
@@ -197,7 +274,7 @@ function validateForm() {
   </table>
   <div style="text-align:center">
     <input type="reset" value="重置"/>
-    <input type="submit" onclick="submitStudent()" value="提交"/>
+    <input type="submit" onclick="submitBill()" value="提交"/>
   </div>
 </form>
 </body>

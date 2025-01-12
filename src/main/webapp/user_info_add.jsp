@@ -80,7 +80,7 @@ function validateForm() {
   </script>
 </head>
 <body onload="populateForm()">
-<form method="post" name="form" action="user_info_edit_to.jsp" onsubmit="return false">
+<form method="post" name="form" action="user_info_add_to.jsp" onsubmit="return false">
     <table width="230" border="1">
         <tbody>
         <tr>

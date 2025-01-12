@@ -41,7 +41,12 @@
 
 </head>
 <body onload="getName()">
-<form method="post">
+<form action="statisticsAdmin.jsp" method="post">
+  <div class="container" align="center">
+    <button onclick="window.location.href='statisticsAdmin.jsp'">收支统计</button>
+  </div>
+</form>
+<form action="add_bill.jsp" method="post">
   <div class="hyn">
   <div class="con">欢迎你</div>
     <input  style='border: none;' class="conn" name="name" id="name"/>
@@ -85,7 +90,8 @@
             + "<th width='120'>金额</th>"
             + "<th width='120'>人员</th>"
             + "<th width='120'>描述</th>"
-            + "<th width='100'>收/支</th>");
+            + "<th width='120'>收/支</th>"
+            + "<th width='100'>name</th>");
 
     for (Bill bill : list) {
         out.print("<tr style='border: none;'>");
@@ -96,6 +102,7 @@
         out.print("<td align='center'>" + bill.getPerson() + "</td>");
         out.print("<td align='center'>" + bill.getRemarks() + "</td>");
         out.print("<td align='center'>" + bill.getIn_or_out() + "</td>");
+      out.print("<td align='center'>" + bill.getName() + "</td>");
         out.print("</tr>");
     }
     out.print("</table>");

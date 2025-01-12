@@ -18,19 +18,26 @@
 <body>
 <%
   request.setCharacterEncoding("utf-8");
-  String id=request.getParameter("id");
-  String name=request.getParameter("name");
-  String gender=request.getParameter("gender");
-  String phone=request.getParameter("phone");
+
+  String year=request.getParameter("year");
+  String month=request.getParameter("month");
+  String time=year+"."+month;
+  String in_or_out=request.getParameter("in_or_out");
+  String type=request.getParameter("type");
+  String sum=request.getParameter("sum");
+  String person=request.getParameter("person");
+  String account=request.getParameter("account");
+  String remarks=request.getParameter("remarks");
+
   SqlConn sqlconn=new SqlConn();
   Connection connection= SqlConn.getConnection();
   if (connection!=null){
-    int i=sqlconn.insert(id,name,gender,phone);
+    int i=sqlconn.insertIntoBill(time,type,account,sum,person,remarks,in_or_out);
     out.print("成功添加"+i+"条数据");
-    out.print("<a href=add.jsp=>返回" + "</a>");
+    out.print("<a href=add_bill.jsp>返回" + "</a>");
   }else {
     out.print("数据库连接数据失败");
-    out.print("添加失败"+"<a href=add.jsp=>返回" + "</a>");
+    out.print("添加失败"+"<a href=add_bill.jsp=>返回" + "</a>");
   }
 %>
 </body>

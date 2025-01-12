@@ -1,6 +1,6 @@
 package chrkey.bean;
 
-public class User_info {
+public class UserInfo {
     String id;
     String name;
     String password;

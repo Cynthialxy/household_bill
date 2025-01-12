@@ -18,19 +18,21 @@
 <body>
 <%
     request.setCharacterEncoding("utf-8");
+
     String id=request.getParameter("id");
     String name=request.getParameter("name");
     String password=request.getParameter("password");
     String is_admin_or_not=request.getParameter("is_admin_or_not");
+
     SqlConn sqlconn=new SqlConn();
     Connection connection= SqlConn.getConnection();
     if (connection!=null){
         int i=sqlconn.insertIntoUserInfo(id,name,password,is_admin_or_not);
         out.print("成功添加"+i+"条数据");
-        out.print("<a href=user_info_edit.jsp=>返回" + "</a>");
+        out.print("<a href=user_info_add.jsp>返回" + "</a>");
     }else {
         out.print("数据库连接数据失败");
-        out.print("添加失败"+"<a href=user_info_edit.jsp=>返回" + "</a>");
+        out.print("添加失败"+"<a href=user_info_add.jsp>返回" + "</a>");
     }
 %>
 </body>
